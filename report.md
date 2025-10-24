@@ -55,5 +55,12 @@ Tiga metrik utama Pub-Sub aggregator:
 3. Duplicate rate → proporsi duplikasi; menurun dengan dedup store efisien.
 Trade-off utama: menurunkan latency sering mengurangi durability, meningkatkan throughput dapat menaikkan duplicate rate. Pilihan parameter ditentukan oleh prioritas aplikasi (low-latency trading vs audit logging) (Tanenbaum & van Steen, Bab 1 hlm. 10–24; Coulouris et al., Bab 21 hlm. 915–964).
 
+## Ringkasan Sistem Dan Arsitektur
+[Publishers] --HTTP /publish--> [Aggregator API]
+    -> in-memory asyncio.Queue -> [Workers/Consumers]
+    -> Dedup Store (SQLite, key=(topic,event_id), INSERT OR IGNORE)
+    -> Events table (for GET /events)
+    -> /stats (received, unique_processed, duplicate_dropped, topics, uptime)
+
 ## Link Video Youtube Demonstrasi Aggregator
 https://youtu.be/9vzZSC_RhJE
