@@ -139,6 +139,3 @@ Konfigurasi & Asumsi
 - Stats tak langsung naik → tunggu 0.5–1 dtk (consumer async) lalu panggil /stats lagi.
 - Dedup tak persisten → pastikan volume ./data:/app/data terpasang dan data/dedup.db tidak terhapus.
 - Port 8080 bentrok → jalankan -p 8081:8080 dan akses http://localhost:8081.
-
-## Lisensi
-Tugas akademik. Gunakan seperlunya.
