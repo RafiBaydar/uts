@@ -24,7 +24,7 @@ Windows PowerShell (disarankan). Sesuaikan port jika 8080 sudah terpakai.
 1. Build image
 
        docker build -t uts-aggregator .
-3. Jalankan container (DB persisten)
+2. Jalankan container (DB persisten)
 
         if (!(Test-Path .\data)) { mkdir data | Out-Null }  # folder untuk SQLite
         
@@ -35,6 +35,12 @@ Windows PowerShell (disarankan). Sesuaikan port jika 8080 sudah terpakai.
           -p 8080:8080 `
           -v "$P\data:/app/data" `
         uts-aggregator
+
+3. Cek service
+
+        curl.exe http://localhost:8080/healthz
+        curl.exe http://localhost:8080/stats
+        # Swagger: http://localhost:8080/docs
 
 ## Contoh Pemakaian
 ### Kirim 1 event (unik)
@@ -91,7 +97,7 @@ Total 5–10 test (repo ini menyediakan 6). Jalankan di host (bukan di dalam con
 3. Jalankan test:
 
         python -m pytest -q tests
-        ## atau subset:
+        # atau subset:
         python -m pytest -q tests\test_dedup.py tests\test_schema_stats.py
 
 4. Stress test (≥ 5.000 event, ≥ 20% duplikat) sudah disediakan di tests/test_stress.py.
