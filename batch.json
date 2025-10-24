@@ -1,0 +1,5 @@
+﻿[
+  {"topic":"orders","event_id":"o-2","timestamp":"2025-01-01T00:00:10Z","source":"cli","payload":{"total":1}},
+  {"topic":"orders","event_id":"o-2","timestamp":"2025-01-01T00:00:11Z","source":"cli","payload":{"total":2}},
+  {"topic":"orders","event_id":"o-3","timestamp":"2025-01-01T00:00:12Z","source":"cli","payload":{"total":3}}
+]
