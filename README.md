@@ -9,61 +9,47 @@ Aggregator sederhana untuk menerima event via HTTP, memasukkan ke antrean in-mem
 - GET /stats: received, unique_processed, duplicate_dropped, topics, uptime_seconds, queue_size.
 - GET /healthz: health check.
 - Swagger UI: /docs.
-  
-## Arsitektur (ringkas)
-Publisher --> POST /publish --> asyncio.Queue --> consumer worker(s)
-                                           |--> SQLite.dedup (PK: topic,event_id)
-                                           |--> SQLite.events (data unik)
-
-- FastAPI + asyncio untuk I/O cepat dan worker paralel.
-- Idempotensi: INSERT OR IGNORE ke tabel dedup(topic,event_id) → duplikat tidak diproses ulang.
-- Persisten: SQLite file dedup.db (di-mount ke host) → dedup tetap efektif setelah restart.
-- Ordering: tidak menjamin total ordering (fokus aggregator idempotent). Jika butuh ordering ketat, gunakan sequencer/broker (di luar scope).
-- Performa: beberapa worker (default 4), antrean besar (default 10k), SQLite WAL.
 
 ## Skema Event (minimal)
->{
->  "topic": "string",
->  "event_id": "string-unik",
->  "timestamp": "ISO8601",
->  "source": "string",
->  "payload": { }
->}
+    {
+    "topic": "string",
+    "event_id": "string-unik",
+    "timestamp": "ISO8601",
+    "source": "string",
+    "payload": { }
+    }
 
 ## Quickstart (Docker)
 Windows PowerShell (disarankan). Sesuaikan port jika 8080 sudah terpakai.
 1. Build image
->docker build -t uts-aggregator .
-2. Jalankan container (DB persisten)
->if (!(Test-Path .\data)) { mkdir data | Out-Null }  # folder untuk SQLite
->
->docker rm -f uts-agg 2>$null
->
->$P = (Get-Location).Path
->docker run -d --name uts-agg `
->  -p 8080:8080 `
->  -v "$P\data:/app/data" `
->  uts-aggregator
-3. Cek service
->curl.exe http://localhost:8080/healthz
->curl.exe http://localhost:8080/stats
-Swagger:
->http://localhost:8080/docs
+
+       docker build -t uts-aggregator .
+3. Jalankan container (DB persisten)
+
+        if (!(Test-Path .\data)) { mkdir data | Out-Null }  # folder untuk SQLite
+        
+        docker rm -f uts-agg 2>$null
+        
+        $P = (Get-Location).Path
+        docker run -d --name uts-agg `
+          -p 8080:8080 `
+          -v "$P\data:/app/data" `
+        uts-aggregator
 
 ## Contoh Pemakaian
 ### Kirim 1 event (unik)
->@'
->{"topic":"orders","event_id":"o-1","timestamp":"2025-01-01T00:00:00Z","source":"cli","payload":{"total":123}}
->'@ | Out-File -Encoding utf8 payload.json
->
->curl.exe -X POST http://localhost:8080/publish -H "Content-Type: application/json" --data-binary "@payload.json"
+    @'
+    {"topic":"orders","event_id":"o-1","timestamp":"2025-01-01T00:00:00Z","source":"cli","payload":{"total":123}}
+    '@ | Out-File -Encoding utf8 payload.json
+    
+    curl.exe -X POST http://localhost:8080/publish -H "Content-Type: application/json" --data-binary "@payload.json"
 
 ### Kirim duplikat (simulasi at-least-once)
->curl.exe -X POST http://localhost:8080/publish -H "Content-Type: application/json" --data-binary "@payload.json"
+    curl.exe -X POST http://localhost:8080/publish -H "Content-Type: application/json" --data-binary "@payload.json"
 
 ### Lihat events & stats
->curl.exe "http://localhost:8080/events?topic=orders&limit=100"
->curl.exe http://localhost:8080/stats
+    curl.exe "http://localhost:8080/events?topic=orders&limit=100"
+    curl.exe http://localhost:8080/stats
 
 - Ekspektasi:
   - Duplikat → duplicate_dropped naik, tanpa menambah event unik.
@@ -73,7 +59,8 @@ Swagger:
 1. POST /publish
 - Body: objek event atau array event.
 - Response:
->{ "accepted": <int>, "queued": <int>, "errors": [ "..."] | null }
+
+      { "accepted": <int>, "queued": <int>, "errors": [ "..."] | null }
 - Validasi skema: topic, event_id, timestamp(ISO8601), source, payload{}.
 
 2. GET /events
