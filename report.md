@@ -57,15 +57,15 @@ Trade-off utama: menurunkan latency sering mengurangi durability, meningkatkan t
 
 ## Ringkasan Sistem Dan Arsitektur
     [Publisher(s)]
-         │  POST /publish  (batch/single)
-         ▼
-     [FastAPI Ingress] ──▶ [asyncio.Queue] ──▶ [Consumer Workers]
-                                     │                │
-                                     ▼                ▼
-                          [Dedup Store (SQLite)]  ←───┘  (INSERT OR IGNORE by (topic,event_id))
-                                     │
-                                     ├─▶ GET /events?topic=...
-                                     └─▶ GET /stats (received, unique_processed, duplicate_dropped, topics, uptime)
+         |  POST /publish  (batch/single)
+         v
+     [FastAPI Ingress] --> [asyncio.Queue] --> [Consumer Workers]
+                                     |                |
+                                     v                v
+                          [Dedup Store (SQLite)]  <---|  (INSERT OR IGNORE by (topic,event_id))
+                                     |
+                                     |--> GET /events?topic=...
+                                     |--> GET /stats (received, unique_processed, duplicate_dropped, topics, uptime)
 
 
 ## Link Video Youtube Demonstrasi Aggregator
