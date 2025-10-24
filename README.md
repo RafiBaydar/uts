@@ -66,7 +66,8 @@ Windows PowerShell (disarankan). Sesuaikan port jika 8080 sudah terpakai.
 2. GET /events
 - Query: topic (opsional), limit, offset.
 - Response:
->{ "events": [ ... ], "count": <int> }
+
+      { "events": [ ... ], "count": <int> }
 
 3. GET /stats
 - Field:
@@ -77,20 +78,23 @@ Windows PowerShell (disarankan). Sesuaikan port jika 8080 sudah terpakai.
   - uptime_seconds, queue_size.
 
 4. GET /healthz
->{"status":"ok"}.
+
+        {"status":"ok"}.
 
 ## Pengujian (Unit Tests)
 Total 5–10 test (repo ini menyediakan 6). Jalankan di host (bukan di dalam container).
 1. Install alat test:
->python -m pip install -r requirements.txt
->python -m pip install pytest pytest-asyncio trio
+   
+        python -m pip install -r requirements.txt
+        python -m pip install pytest pytest-asyncio trio
 
-2. Jalankan test:
->python -m pytest -q tests
-atau subset:
->python -m pytest -q tests\test_dedup.py tests\test_schema_stats.py
+3. Jalankan test:
 
-3. Stress test (≥ 5.000 event, ≥ 20% duplikat) sudah disediakan di tests/test_stress.py.
+        python -m pytest -q tests
+        ## atau subset:
+        python -m pytest -q tests\test_dedup.py tests\test_schema_stats.py
+
+4. Stress test (≥ 5.000 event, ≥ 20% duplikat) sudah disediakan di tests/test_stress.py.
 
 ## Dockerfile (ringkas)
 - Base: python:3.11-slim
@@ -100,15 +104,16 @@ atau subset:
 - Port: 8080
 
 Contoh struktur:
->FROM python:3.11-slim
->WORKDIR /app
->RUN adduser --disabled-password --gecos '' appuser && chown -R appuser:appuser /app
->USER appuser
->COPY requirements.txt ./
->RUN pip install --no-cache-dir -r requirements.txt
->COPY src/ ./src/
->EXPOSE 8080
->CMD ["python", "-m", "src.main"]
+
+    FROM python:3.11-slim
+    WORKDIR /app
+    RUN adduser --disabled-password --gecos '' appuser && chown -R appuser:appuser /app
+    USER appuser
+    COPY requirements.txt ./
+    RUN pip install --no-cache-dir -r requirements.txt
+    COPY src/ ./src/
+    EXPOSE 8080
+    CMD ["python", "-m", "src.main"]
 
 Konfigurasi & Asumsi
 - Local-only, tanpa layanan eksternal (DB embedded: SQLite).
