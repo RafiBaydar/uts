@@ -50,9 +50,9 @@ Eventual consistency berarti semua replica akhirnya menyatu bila tidak ada updat
 ## T8 – Rumuskan metrik evaluasi sistem (throughput, latency, duplicate rate) dan kaitkan ke keputusan desain.
 
 Tiga metrik utama Pub-Sub aggregator:
-1. Throughput (event per detik) → bergantung pada komunikasi & replikasi (Bab 4 & 7).
-2. Latency → waktu publish-deliver; dipengaruhi ordering & durability.
-3. Duplicate rate → proporsi duplikasi; menurun dengan dedup store efisien.
+1. Throughput (event per detik) -> bergantung pada komunikasi & replikasi (Bab 4 & 7).
+2. Latency -> waktu publish-deliver; dipengaruhi ordering & durability.
+3. Duplicate rate -> proporsi duplikasi; menurun dengan dedup store efisien.
 Trade-off utama: menurunkan latency sering mengurangi durability, meningkatkan throughput dapat menaikkan duplicate rate. Pilihan parameter ditentukan oleh prioritas aplikasi (low-latency trading vs audit logging) (Tanenbaum & van Steen, Bab 1 hlm. 10–24; Coulouris et al., Bab 21 hlm. 915–964).
 
 ## Ringkasan Sistem Dan Arsitektur
